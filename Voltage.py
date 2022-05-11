@@ -7,7 +7,7 @@ import time
 SHUNT_OHMS = 0.1
 MAX_EXPECTED_AMPS = 0.2
 
-ina = INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS, log_level=logging.INFO, address=0x42)
+ina = INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS, log_level=logging.INFO, address=0x42, busnum=1)
 ina.configure(ina.RANGE_16V, ina.GAIN_AUTO)
 
 def measure():
