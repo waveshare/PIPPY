@@ -425,24 +425,20 @@ class Camera(BaseCamera):
         cvt.start()
 
         while True:
-            # read current frame
-            _, img = camera.read()
+            success, img = camera.read()  # Capture frame-by-frame
+            if not success or img is None:
+                # If the frame was not captured successfully, skip encoding
+                print("Failed to capture image. Retrying...")
+                time.sleep(0.1)  # Add a short delay before trying again
+                continue
 
-            if Camera.modeSelect == 'none':
-                cvt.pause()
-            else:
-                if cvt.CVThreading:
-                    pass
-                else:
-                    cvt.mode(Camera.modeSelect, img)
-                    cvt.resume()
-                try:
-                    img = cvt.elementDraw(img)
-                except:
-                    pass
-
-            # encode as a jpeg image and return it
-            yield cv2.imencode('.jpg', img)[1].tobytes()
+            # Proceed with encoding only if the image is valid
+            try:
+                encoded_img = cv2.imencode('.jpg', img)[1].tobytes()
+                yield encoded_img
+            except cv2.error as e:
+                print(f"Error encoding image: {e}")
+                continue
 
 
 class Functions(threading.Thread):
